@@ -3,15 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SoftHandler : MonoBehaviour
 {
     [SerializeField] GameObject historyPreFab;
     [SerializeField] GameObject newsPreFab;
     [SerializeField] GameObject historyContent;
-    [SerializeField] GameObject newsContent;
+    [SerializeField] TextMeshProUGUI newsTitle;
+    [SerializeField] TextMeshProUGUI newsArticle;
     [SerializeField] GameObject connectionIssuesContent;
     public bool connectionIssues = true;
+
+    public static bool newsAreReceived = false;
+    public static int numberOfNews;
+    public static List<string[]> newsData;
+    public static int shownNewsID;
 
     private void Start()
     {
@@ -65,33 +72,42 @@ public class SoftHandler : MonoBehaviour
         }
     }
 
-    public void LoadNews()
+    // Loads news data receive from function ReceiveNews(_packet), newsID starts from 0
+    public void LoadNews(int newsID)
     {
-        int numberOfDirectories = NewsFileMngr.GetNumberOfDirectories();
+        newsTitle.text = newsData[newsID][0];
+        newsArticle.text = newsData[newsID][1];
+        shownNewsID = newsID;
 
-        if (numberOfDirectories == 0) { connectionIssues = true; return; }
-        else connectionIssues = false;
+        Debug.Log("News have been loaded");
+    }
 
-        connectionIssuesContent.SetActive(false);
-
-        for (int i = 1; i <= numberOfDirectories; i++)
+    public void LoadNextNews()
+    {
+        if (shownNewsID == numberOfNews - 1)
         {
-            string dataPath = Application.dataPath + @"/news/" + i.ToString();
-
-
-            string[] data = System.IO.File.ReadAllLines(dataPath + @"/description.txt");
-
-            GameObject newsGO = Instantiate(newsPreFab, new Vector3(0, 0, 0), Quaternion.identity, newsContent.transform);
-
-            // TITLE
-            newsGO.transform.GetChild(0).GetComponent<Text>().text = data[0];
-            // TEXT
-            newsGO.transform.GetChild(1).GetComponent<Text>().text = data[1];
-            // IMAGE
-            newsGO.transform.GetChild(2).GetComponent<Image>().sprite = ImageConverter.Convert(dataPath + @"/logo.jpg");
-            // PATH
-            newsGO.transform.GetChild(3).GetChild(0).name = dataPath;
+            Debug.Log("There is no more news!!");
         }
+        else
+        {
+            LoadNews(shownNewsID + 1);
+        }
+    }
+    public void LoadPreviousNews()
+    {
+        if (shownNewsID == 0)
+        {
+            Debug.Log("You cannot read negative news!!");
+        }
+        else
+        {
+            LoadNews(shownNewsID - 1);
+        }
+    }
+
+    public void OpenNews()
+    {
+        System.Diagnostics.Process.Start(newsData[shownNewsID][2]);
     }
 
     public void LoadConnectionIssuesContent()
@@ -101,12 +117,20 @@ public class SoftHandler : MonoBehaviour
 
     IEnumerator UpdateNews()
     {
-        LoadConnectionIssuesContent();
-        while (connectionIssues)
-        {
-            yield return new WaitForSeconds(5.0f);
-            ClientSend.GetNews();
-            LoadNews();
-        }
+        // Awaiting for loading
+        yield return new WaitForSeconds(1.0f);
+
+        ClientSend.GetNews();
+        Debug.Log("We asked for news");
+
+        // Wait a second for derver to respond
+        yield return new WaitForSeconds(1.0f);
+
+        Debug.Log("We have received " + numberOfNews.ToString() + " news");
+
+        if (newsAreReceived)
+            LoadNews(0);
+        else
+            connectionIssues = true;
     }
 }
