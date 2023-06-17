@@ -8,6 +8,7 @@ using System.IO;
 public class ClientHandle : MonoBehaviour
 {
     [SerializeField] TextAsset JSONHistory;
+    [SerializeField] SoftHandler softHandler;
 
     public static void Welcome(Packet _packet)
     {
@@ -75,32 +76,22 @@ public class ClientHandle : MonoBehaviour
     {
         int numberOfNews = _packet.ReadInt();
 
-        for (int i = 1; i <= numberOfNews; i++)
+        List<string[]> newsData = new List<string[]>();
+
+        for (int i = 0; i < numberOfNews; i++)
         {
-            string descriptionURL = _packet.ReadString();
-            string logoURL = _packet.ReadString();
+            string newsTitle = _packet.ReadString();
+            string newsArticle = _packet.ReadString();
+            string newsLink = _packet.ReadString();
 
-            string newsPlaceholderPath = Application.dataPath + @"/news/" + i.ToString();
+            string[] news = {newsTitle, newsArticle, newsLink};
 
-            if (!Directory.Exists(newsPlaceholderPath))
-            {
-                Directory.CreateDirectory(newsPlaceholderPath);
-                Debug.Log($"New directory {i.ToString()} in news has been created");
-            }
-            else
-            {
-                Debug.Log($"Directory {i.ToString()} in news already exists");
-            }
-
-            Thread logoDownloadThread = new Thread(() => Download.DownloadLogo(logoURL, newsPlaceholderPath));
-            Thread descrDownloadThread = new Thread(() => Download.DownloadDescription(descriptionURL, newsPlaceholderPath));
-
-            Debug.Log($"Received a logo's url \"{logoURL}\" to download the logo \nDownloading started!");
-            logoDownloadThread.Start();
-            Debug.Log($"Received a description's url \"{descriptionURL}\" to download the description \nDownloading started!");
-            descrDownloadThread.Start();
-
-            Debug.Log($"Download complete????????????????? TO FIX!!");
+            newsData.Add(news);
         }
+
+        // Passing data and other values to SoftHandler class
+        SoftHandler.numberOfNews = numberOfNews;
+        SoftHandler.newsData = newsData;
+        SoftHandler.newsAreReceived = true;
     }
 }
