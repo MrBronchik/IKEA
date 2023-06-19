@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class SoftHandler : MonoBehaviour
 {
@@ -28,8 +29,9 @@ public class SoftHandler : MonoBehaviour
     void OnApplicationQuit()
     {
         string newsDirectory = Application.dataPath + @"/news";
-        Directory.Delete(Application.dataPath + @"/news", true);
-        Directory.CreateDirectory(newsDirectory);
+        if (Directory.Exists(newsDirectory))
+            Directory.Delete(Application.dataPath + @"/news", true);
+        //Directory.CreateDirectory(newsDirectory);
     }
 
     public void DestroyHistory()
@@ -69,6 +71,8 @@ public class SoftHandler : MonoBehaviour
             historicalGO.transform.GetChild(4).GetComponent<Image>().sprite = ImageConverter.Convert(dataPath + @"/logo.jpg");
             // PATH
             historicalGO.transform.GetChild(5).GetChild(0).name = dataPath;
+            // BUTTON
+            // historicalGO.transform.GetChild(6).GetComponent<Button>().onClick.AddListener(delegate {}) = dataPath;
         }
     }
 

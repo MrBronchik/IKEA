@@ -401,6 +401,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2264912519499961748}
   - component: {fileID: 4598044535298053198}
+  - component: {fileID: 5004039320740432528}
   m_Layer: 0
   m_Name: history-obj
   m_TagString: Untagged
@@ -477,7 +478,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1514215306554780534}
+      - m_Target: {fileID: 5004039320740432528}
         m_TargetAssemblyTypeName: Load3DPlayer, Assembly-CSharp
         m_MethodName: LoadThisInstr
         m_Mode: 1
@@ -489,6 +490,18 @@ MonoBehaviour:
           m_StringArgument: 3D_Player
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5004039320740432528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8334278663605988962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af8e15cf13ee05d46a9d072ee53c8b2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9101747531789618268
 GameObject:
   m_ObjectHideFlags: 0
